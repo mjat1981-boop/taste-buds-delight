@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0f;
+  color: #f5f5fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.glass {
+  background: rgba(18, 18, 32, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
