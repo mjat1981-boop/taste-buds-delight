@@ -1,11 +1,8 @@
 export type Category =
-  | "Gummies & Chews"
+  | "Gummies & Sweets"
+  | "Vapes"
+  | "Brownies"
   | "Cookies"
-  | "Chocolate & Truffles"
-  | "Hard Candy & Lollipops"
-  | "Vapes & Disposables"
-  | "Edibles"
-  | "Snacks"
   | "Bundles & Deals"
   | "Best Sellers";
 
