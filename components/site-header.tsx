@@ -29,7 +29,7 @@ export function SiteHeader() {
             Shop
           </Link>
           <a
-            href="https://www.tiktok.com/@tastebudsdelight"
+            href="https://www.tiktok.com/@tbdo4"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 hover:text-tbd-green transition-colors"
@@ -40,7 +40,7 @@ export function SiteHeader() {
             TikTok
           </a>
           <a
-            href="https://wa.me/447911123456"
+            href="https://wa.me/447871529852"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 hover:text-tbd-green transition-colors"

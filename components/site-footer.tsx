@@ -6,7 +6,7 @@ export function SiteFooter() {
       <div className="mt-3 flex items-center justify-center gap-6">
         {/* TikTok */}
         <a
-          href="https://www.tiktok.com/@tastebudsdelight"
+          href="https://www.tiktok.com/@tbdo4"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 font-semibold text-tbd-text hover:text-tbd-green transition-colors"
@@ -19,7 +19,7 @@ export function SiteFooter() {
 
         {/* WhatsApp */}
         <a
-          href="https://wa.me/447911123456"
+          href="https://wa.me/447871529852"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 font-semibold text-tbd-text hover:text-tbd-green transition-colors"
