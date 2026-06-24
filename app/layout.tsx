@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
 import { CartProvider } from "@/store/cart-store";
 import { SiteHeader } from "@/components/site-header";
@@ -6,14 +7,14 @@ import { SiteFooter } from "@/components/site-footer";
 import { AgeGate } from "@/components/age-gate";
 
 export const metadata: Metadata = {
-  title: "Tasty Budz",
+  title: "Taste Buds Delight",
   description: "Sweet Temptations Delivered"
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-budz-gradient">
+      <body className="bg-tbd-bg text-tbd-text">
         <CartProvider>
           <AgeGate />
           <SiteHeader />

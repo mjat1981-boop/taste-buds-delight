@@ -11,3 +11,8 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 Thumbs.db
+tsconfig.tsbuildinfo
+_codex_write_test.txt
+apply-codex-config.bat
+config.optimized.*.toml
+config.toml.bak-*

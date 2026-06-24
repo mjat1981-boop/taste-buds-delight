@@ -36,4 +36,18 @@ export type ShippingInfo = {
   zip: string;
 };
 
-export type PaymentMethod = "card" | "paypal";
+export type PaymentMethod = "bank_transfer";
+
+export type Order = {
+  id?: string;
+  order_number: string;
+  customer_name: string;
+  customer_email: string;
+  items: CartItem[];
+  shipping_info: ShippingInfo;
+  subtotal: number;
+  tax: number;
+  shipping_cost: number;
+  total: number;
+  created_at?: string;
+};

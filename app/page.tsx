@@ -11,47 +11,44 @@ export default function HomePage() {
 
   return (
     <div className="space-y-14">
-      <section className="glass relative overflow-hidden rounded-3xl p-8 md:p-12">
-        <div className="absolute -right-10 -top-10 h-52 w-52 rounded-full bg-budz-purple/30 blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 h-52 w-52 rounded-full bg-budz-green/30 blur-3xl" />
-        <div className="relative grid items-center gap-8 md:grid-cols-2">
-          <div>
-            <p className="mb-2 text-sm uppercase tracking-[0.2em] text-budz-pink">Tasty Budz</p>
-            <h1 className="text-4xl font-black leading-tight md:text-6xl">
-              Sweet Temptations <span className="text-budz-green">Delivered</span>
-            </h1>
-            <p className="mt-3 inline-block rounded-full border border-budz-orange/40 bg-budz-orange/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-budz-orange">
-              Baked to Perfection
-            </p>
-            <p className="mt-4 max-w-xl text-budz-muted">
-              Mouth-watering sweets, candies, cookies, snacks, and elevated favorites in a vibrant,
-              legal-friendly experience.
-            </p>
-            <div className="mt-7 flex gap-3">
-              <Link href="/shop" className="rounded-full bg-budz-pink px-6 py-3 font-bold">
-                Shop Now
-              </Link>
-              <Link
-                href="/shop?category=Best%20Sellers"
-                className="rounded-full border border-white/20 px-6 py-3 font-bold"
-              >
-                Best Sellers
-              </Link>
-            </div>
-          </div>
-          <div className="glass rounded-3xl p-8 shadow-neon">
-            <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-budz-green">
-              Brand Visual
-            </p>
-            <div className="relative h-[320px] overflow-hidden rounded-2xl border border-white/10">
-              <Image
-                src="/images/brand/tasty-budz-logo.png"
-                alt="Tasty Budz official logo"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-3xl min-h-[480px] md:min-h-[560px]">
+        {/* Background image */}
+        <Image
+          src="/images/brand/hero-bg.jpg"
+          alt="Taste Buds Delight — brownies and cookies"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Dark overlay so text is readable */}
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="relative flex flex-col items-center justify-center h-full min-h-[480px] md:min-h-[560px] px-8 py-16 text-center">
+          <p className="mb-3 text-sm uppercase tracking-[0.2em] text-tbd-green font-semibold">
+            Taste Buds Delight
+          </p>
+          <h1 className="text-4xl font-black leading-tight md:text-6xl text-white drop-shadow-lg">
+            Sweet Temptations <span className="text-tbd-green">Delivered</span>
+          </h1>
+          <p className="mt-3 inline-block rounded-full border border-white/30 bg-white/10 px-4 py-2 text-sm font-black uppercase tracking-wider text-white">
+            Baked to Perfection
+          </p>
+          <p className="mt-4 max-w-xl text-white/80">
+            Mouth-watering brownies, cookies, and sweet treats crafted with love and delivered to your door via Evri.
+          </p>
+          <div className="mt-7 flex gap-3">
+            <Link
+              href="/shop"
+              className="rounded-full bg-tbd-green px-6 py-3 font-bold text-white hover:bg-tbd-green/80 transition-colors shadow-lg"
+            >
+              Shop Now
+            </Link>
+            <Link
+              href="/shop?category=Best%20Sellers"
+              className="rounded-full border border-white/40 bg-white/10 px-6 py-3 font-bold text-white hover:bg-white/20 transition-colors"
+            >
+              Best Sellers
+            </Link>
           </div>
         </div>
       </section>
@@ -85,10 +82,10 @@ export default function HomePage() {
             "https://images.unsplash.com/photo-1551024601-bec78aea704b",
             "https://images.unsplash.com/photo-1621939514649-280e2ee25f60"
           ].map((src, idx) => (
-            <div key={src} className="glass relative h-56 overflow-hidden rounded-2xl">
+            <div key={src} className="relative h-56 overflow-hidden rounded-2xl border border-tbd-green/15">
               <Image
                 src={src}
-                alt={`Tasty Budz product visual ${idx + 1}`}
+                alt={`Taste Buds Delight product visual ${idx + 1}`}
                 fill
                 className="object-cover"
               />

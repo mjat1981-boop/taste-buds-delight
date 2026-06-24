@@ -15,7 +15,7 @@ export function CartSummary() {
               <span>
                 {p.name} x {item.quantity}
               </span>
-              <span>${(p.price * item.quantity).toFixed(2)}</span>
+              <span>£{(p.price * item.quantity).toFixed(2)}</span>
             </div>
           );
         })}
@@ -23,19 +23,19 @@ export function CartSummary() {
       <div className="mt-4 space-y-1 border-t border-white/10 pt-4 text-sm">
         <div className="flex justify-between">
           <span>Subtotal</span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>£{subtotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span>Tax</span>
-          <span>${tax.toFixed(2)}</span>
+          <span>£{tax.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
-          <span>Shipping</span>
-          <span>{shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}</span>
+          <span>Evri Delivery</span>
+          <span>{shippingCost === 0 ? "Free" : `£${shippingCost.toFixed(2)}`}</span>
         </div>
         <div className="mt-2 flex justify-between text-lg font-black text-budz-orange">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>£{total.toFixed(2)}</span>
         </div>
       </div>
     </aside>

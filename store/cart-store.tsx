@@ -2,7 +2,7 @@
 
 import { products } from "@/data/products";
 import { CartItem, CheckoutStep, PaymentMethod, ShippingInfo } from "@/types";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from "react";
 
 type CartContextType = {
   items: CartItem[];
@@ -10,6 +10,10 @@ type CartContextType = {
   shipping: ShippingInfo;
   payment: PaymentMethod;
   ageVerified: boolean;
+  orderId: string | null;
+  orderNumber: string | null;
+  isSubmitting: boolean;
+  submitError: string | null;
   addItem: (productId: string, quantity: number) => void;
   updateQty: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
@@ -18,6 +22,7 @@ type CartContextType = {
   setShipping: (value: ShippingInfo) => void;
   setPayment: (value: PaymentMethod) => void;
   setAgeVerified: (value: boolean) => void;
+  placeOrder: () => Promise<void>;
   subtotal: number;
   tax: number;
   shippingCost: number;
@@ -38,8 +43,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [step, setStep] = useState<CheckoutStep>("cart");
   const [shipping, setShipping] = useState<ShippingInfo>(defaultShipping);
-  const [payment, setPayment] = useState<PaymentMethod>("card");
+  const [payment, setPayment] = useState<PaymentMethod>("bank_transfer");
   const [ageVerified, setAgeVerifiedState] = useState<boolean>(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const addItem = (productId: string, quantity: number) => {
     setItems((prev) => {
@@ -62,7 +71,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((x) => x.productId !== productId));
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    setOrderId(null);
+    setOrderNumber(null);
+    setSubmitError(null);
+    setStep("cart");
+  };
 
   const subtotal = useMemo(() => {
     return items.reduce((acc, item) => {
@@ -72,7 +87,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const tax = subtotal * 0.08;
-  const shippingCost = subtotal > 50 ? 0 : 6.99;
+  const shippingCost = subtotal > 50 ? 0 : 6;
   const total = subtotal + tax + shippingCost;
 
   const setAgeVerified = (value: boolean) => {
@@ -82,12 +97,47 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const placeOrder = useCallback(async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          shipping_info: shipping,
+          subtotal,
+          tax,
+          shipping_cost: shippingCost,
+          total,
+        }),
+      });
+      const json = await res.json() as { success?: boolean; orderId?: string; orderNumber?: string; error?: string };
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "Order submission failed");
+      }
+      setOrderId(json.orderId ?? null);
+      setOrderNumber(json.orderNumber ?? null);
+      setStep("confirmation");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [items, shipping, subtotal, tax, shippingCost, total]);
+
   const value: CartContextType = {
     items,
     step,
     shipping,
     payment,
     ageVerified,
+    orderId,
+    orderNumber,
+    isSubmitting,
+    submitError,
     addItem,
     updateQty,
     removeItem,
@@ -96,6 +146,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setShipping,
     setPayment,
     setAgeVerified,
+    placeOrder,
     subtotal,
     tax,
     shippingCost,

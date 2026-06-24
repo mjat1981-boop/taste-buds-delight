@@ -1,65 +1,51 @@
-"use client";
-
-import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { ProductCard } from "@/components/product-card";
 import { SectionTitle } from "@/components/section-title";
-import { categories, products } from "@/data/products";
+import { ShopClient } from "@/components/shop-client";
 
-export default function ShopPage() {
-  const params = useSearchParams();
-  const initialCategory = params.get("category") ?? "All";
-  const [category, setCategory] = useState(initialCategory);
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("featured");
+export const dynamic = "force-dynamic";
 
-  const filtered = useMemo(() => {
-    let list = products.filter((p) =>
-      category === "All" ? true : category === "Best Sellers" ? p.isBestSeller : p.category === category
-    );
-    if (query.trim()) {
-      list = list.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()));
-    }
-    if (sort === "priceAsc") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "priceDesc") list = [...list].sort((a, b) => b.price - a.price);
-    return list;
-  }, [category, query, sort]);
+type DbProduct = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+  image_url: string;
+  is_best_seller: boolean;
+  is_new_arrival: boolean;
+};
+
+async function getProducts(): Promise<DbProduct[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/products`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("API error");
+    return res.json() as Promise<DbProduct[]>;
+  } catch {
+    // Fall back to static data if API is unavailable
+    const { products } = await import("@/data/products");
+    return products.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      category: p.category,
+      price: p.price,
+      description: p.description,
+      image_url: p.image,
+      is_best_seller: p.isBestSeller ?? false,
+      is_new_arrival: p.isNewArrival ?? false,
+    }));
+  }
+}
+
+export default async function ShopPage() {
+  const products = await getProducts();
 
   return (
     <div>
       <SectionTitle title="Shop Products" eyebrow="Browse Catalog" />
-      <div className="glass mb-6 grid gap-3 rounded-2xl p-4 md:grid-cols-3">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="rounded-lg bg-budz-panel p-3"
-        >
-          <option>All</option>
-          {categories.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
-        <input
-          className="rounded-lg bg-budz-panel p-3"
-          placeholder="Search sweets..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-          className="rounded-lg bg-budz-panel p-3"
-        >
-          <option value="featured">Featured</option>
-          <option value="priceAsc">Price: Low to High</option>
-          <option value="priceDesc">Price: High to Low</option>
-        </select>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {filtered.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
-      </div>
+      <ShopClient products={products} />
     </div>
   );
 }

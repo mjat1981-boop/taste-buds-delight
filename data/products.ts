@@ -1,153 +1,123 @@
+// Static product fallback — used by the cart store for price lookups.
+// The shop and product pages fetch live data from the API (/api/products).
+// Do NOT delete this file.
 import { Product } from "@/types";
 
 export const categories = [
-  "Gummies & Chews",
+  "Gummies & Sweets",
+  "Vapes",
+  "Brownies",
   "Cookies",
-  "Chocolate & Truffles",
-  "Hard Candy & Lollipops",
-  "Vapes & Disposables",
-  "Edibles",
-  "Snacks",
   "Bundles & Deals",
   "Best Sellers"
 ] as const;
 
 export const products: Product[] = [
+  // Gummies & Sweets
   {
     id: "1",
-    slug: "sour-neon-gummies",
-    name: "Sour Neon Gummies",
-    category: "Gummies & Chews",
-    price: 18.99,
-    image: "/images/products/gummies-signature.png",
-    description: "Tangy fruit chews with bold flavor and soft bite.",
+    slug: "cherrys",
+    name: "Cherry's",
+    category: "Gummies & Sweets",
+    price: 10,
+    image: "https://images.unsplash.com/photo-1582058091022-de7c69a81ece?w=600",
+    description: "1000mg per pack. Juicy cherry-flavoured gummies packed with flavour.",
+    isBestSeller: true
+  },
+  {
+    id: "2",
+    slug: "nerd-bites",
+    name: "Nerd Bites",
+    category: "Gummies & Sweets",
+    price: 10,
+    image: "https://images.unsplash.com/photo-1534706936160-d5ee67737249?w=600",
+    description: "1000mg per pack. Tangy Nerd-inspired bites with a crunch.",
     isBestSeller: true,
     isNewArrival: true
   },
   {
-    id: "2",
-    slug: "cosmic-cookie-truffle-bar",
-    name: "Cosmic Cookie Truffle Bar",
-    category: "Cookies",
-    price: 21.5,
-    image: "https://images.unsplash.com/photo-1549007994-cb92caebd54b",
-    description: "Rich chocolate with crunchy cookie bits.",
-    isBestSeller: true
-  },
-  {
     id: "3",
-    slug: "galaxy-lollipop-pack",
-    name: "Galaxy Lollipop Pack",
-    category: "Hard Candy & Lollipops",
-    price: 12.99,
-    image: "https://images.unsplash.com/photo-1575224526797-5730d5f6bc65",
-    description: "Colorful hard candy swirls in mixed fruit flavors.",
+    slug: "gummy-bears",
+    name: "Gummy Bears",
+    category: "Gummies & Sweets",
+    price: 5,
+    image: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?w=600",
+    description: "800mg per pack. Classic gummy bears in a mix of fruit flavours.",
     isNewArrival: true
   },
   {
     id: "4",
-    slug: "mint-frost-disposable",
-    name: "Mint Frost Disposable",
-    category: "Vapes & Disposables",
-    price: 24.99,
-    image: "/images/products/vape-kit-baked-to-perfection.png",
-    description: "Cool mint profile in a sleek disposable format."
-  },
-  {
-    id: "5",
-    slug: "chill-bites-edibles",
-    name: "Chill Bites Edibles",
-    category: "Edibles",
-    price: 29.99,
-    image: "/images/products/edibles-handcrafted-display.png",
-    description: "Balanced, tasty bites crafted for mellow enjoyment.",
+    slug: "cola-bottles",
+    name: "Cola Bottles",
+    category: "Gummies & Sweets",
+    price: 10,
+    image: "https://images.unsplash.com/photo-1575224526797-5730d5f6bc65?w=600",
+    description: "1000mg per pack. Fizzy cola bottle sweets with a tangy kick.",
     isBestSeller: true
   },
+  // Vapes
+  {
+    id: "5",
+    slug: "high-potency-vape-kit",
+    name: "High Potency Vape Kit",
+    category: "Vapes",
+    price: 25,
+    image: "https://images.unsplash.com/photo-1563170351-be14c343c0cc?w=600",
+    description: "1000mg high potency vape kit. Available in a range of flavours.",
+    isBestSeller: true
+  },
+  // Brownies
   {
     id: "6",
-    slug: "spicy-night-snack-mix",
-    name: "Spicy Night Snack Mix",
-    category: "Snacks",
-    price: 9.99,
-    image: "https://images.unsplash.com/photo-1599490659213-e2b9527bd087",
-    description: "Crunchy snack blend with a sweet-heat kick."
+    slug: "half-tray-brownies",
+    name: "Half Tray Brownies",
+    category: "Brownies",
+    price: 30,
+    image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600",
+    description: "4 generous slices of our signature fudgy brownies. Rich, gooey, and baked to perfection.",
+    isBestSeller: true
   },
   {
     id: "7",
-    slug: "late-night-bundle",
-    name: "Late Night Bundle",
-    category: "Bundles & Deals",
-    price: 44.99,
-    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc",
-    description: "Curated combo pack for max value and variety.",
+    slug: "full-tray-brownies",
+    name: "Full Tray Brownies",
+    category: "Brownies",
+    price: 55,
+    image: "https://images.unsplash.com/photo-1481391032119-d89fee407e44?w=600",
+    description: "8 slices of pure brownie bliss. Perfect for sharing or treating yourself all week.",
     isBestSeller: true
   },
+  // Cookies
   {
     id: "8",
-    slug: "budz-signature-box",
-    name: "Budz Signature Box",
-    category: "Best Sellers",
-    price: 54.99,
-    image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e",
-    description: "Top-rated picks in one premium assortment.",
-    isBestSeller: true,
-    isNewArrival: true
+    slug: "single-cookie",
+    name: "Cookie",
+    category: "Cookies",
+    price: 10,
+    image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600",
+    description: "One thick, soft-baked cookie. Comfort in every bite."
   },
   {
     id: "9",
-    slug: "rainbow-chew-rings",
-    name: "Rainbow Chew Rings",
-    category: "Gummies & Chews",
-    price: 16.49,
-    image: "https://images.unsplash.com/photo-1534706936160-d5ee67737249",
-    description: "Bright chewy rings with juicy fruit punch flavor.",
+    slug: "cookie-5-pack",
+    name: "Cookie 5-Pack",
+    category: "Cookies",
+    price: 40,
+    image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600",
+    description: "5 cookies for £40 — save £10. Our bestselling soft-baked cookies. Great for gifting.",
+    isBestSeller: true,
     isNewArrival: true
   },
+  // Bundles
   {
     id: "10",
-    slug: "velvet-cocoa-bites",
-    name: "Velvet Cocoa Bites",
-    category: "Chocolate & Truffles",
-    price: 19.99,
-    image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c",
-    description: "Silky chocolate cubes with crunchy nut fragments."
-  },
-  {
-    id: "11",
-    slug: "electric-soda-bottles",
-    name: "Electric Soda Bottles",
-    category: "Hard Candy & Lollipops",
-    price: 11.49,
-    image: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b",
-    description: "Classic soda-bottle candy with a fizzy finish."
-  },
-  {
-    id: "12",
-    slug: "snack-attack-pack",
-    name: "Snack Attack Pack",
-    category: "Snacks",
-    price: 14.99,
-    image: "https://images.unsplash.com/photo-1598679253544-2c97992403ea",
-    description: "Loaded snack assortment for late-night cravings."
-  },
-  {
-    id: "13",
-    slug: "triple-chip-cookies",
-    name: "Triple Chip Cookies",
-    category: "Cookies",
-    price: 15.99,
-    image: "https://cloudfront-us-east-1.images.arcpublishing.com/pmn/ABYZ3V2PKVF6BCSGO3V7LIQY3M.jpg",
-    description: "Soft-baked cookies loaded with dark, milk, and white chocolate chips.",
-    isBestSeller: true
-  },
-  {
-    id: "14",
-    slug: "salted-caramel-cookie-stack",
-    name: "Salted Caramel Cookie Stack",
-    category: "Cookies",
-    price: 17.49,
-    image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35",
-    description: "Golden cookies with gooey caramel centers and a hint of sea salt.",
+    slug: "mystery-box",
+    name: "Mystery Box",
+    category: "Bundles & Deals",
+    price: 45,
+    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=600",
+    description: "Surprise selection of our top sweets and treats. Worth every penny.",
+    isBestSeller: true,
     isNewArrival: true
   }
 ];

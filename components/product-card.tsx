@@ -30,7 +30,7 @@ export function ProductCard({ product }: { product: Product }) {
         <p className="text-xs uppercase tracking-wide text-budz-muted">{product.category}</p>
         <h3 className="text-lg font-bold">{product.name}</h3>
         <div className="flex items-center justify-between">
-          <span className="text-budz-orange">${product.price.toFixed(2)}</span>
+          <span className="text-budz-orange">£{product.price.toFixed(2)}</span>
           <button
             className="rounded-full bg-budz-pink px-4 py-2 text-sm font-bold hover:bg-budz-purple"
             onClick={() => addItem(product.id, 1)}
