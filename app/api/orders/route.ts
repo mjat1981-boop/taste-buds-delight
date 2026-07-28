@@ -105,11 +105,44 @@ export async function POST(request: NextRequest) {
   const body = await request.json() as {
     items: CartItem[];
     shipping_info: ShippingInfo;
-    subtotal: number;
-    tax: number;
-    shipping_cost: number;
-    total: number;
   };
+
+  if (!Array.isArray(body.items) || body.items.length === 0) {
+    return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+  }
+
+  for (const item of body.items) {
+    if (!item.productId || !Number.isInteger(item.quantity) || item.quantity <= 0) {
+      return NextResponse.json({ error: "Invalid cart item" }, { status: 400 });
+    }
+  }
+
+  // Recompute pricing server-side from the authoritative products table —
+  // never trust totals submitted by the client.
+  const productIds = body.items.map((item) => item.productId);
+  const { data: dbProducts, error: productsError } = await supabaseAdmin
+    .from("products")
+    .select("id, price")
+    .in("id", productIds);
+
+  if (productsError) {
+    return NextResponse.json({ error: productsError.message }, { status: 500 });
+  }
+
+  const priceById = new Map((dbProducts ?? []).map((p) => [p.id as string, p.price as number]));
+  for (const item of body.items) {
+    if (!priceById.has(item.productId)) {
+      return NextResponse.json({ error: `Unknown product: ${item.productId}` }, { status: 400 });
+    }
+  }
+
+  const subtotal = body.items.reduce(
+    (acc, item) => acc + priceById.get(item.productId)! * item.quantity,
+    0
+  );
+  const tax = subtotal * 0.08;
+  const shippingCost = subtotal > 50 ? 0 : 6;
+  const total = subtotal + tax + shippingCost;
 
   const orderNumber = generateOrderNumber();
   const customerName = body.shipping_info.fullName;
@@ -124,10 +157,10 @@ export async function POST(request: NextRequest) {
       customer_email: customerEmail,
       items: body.items,
       shipping_info: body.shipping_info,
-      subtotal: body.subtotal,
-      tax: body.tax,
-      shipping_cost: body.shipping_cost,
-      total: body.total,
+      subtotal,
+      tax,
+      shipping_cost: shippingCost,
+      total,
     }])
     .select()
     .single();
@@ -146,10 +179,10 @@ export async function POST(request: NextRequest) {
       customerName,
       body.items,
       body.shipping_info,
-      body.subtotal,
-      body.tax,
-      body.shipping_cost,
-      body.total
+      subtotal,
+      tax,
+      shippingCost,
+      total
     ),
   });
 
@@ -159,8 +192,8 @@ export async function POST(request: NextRequest) {
     await resend.emails.send({
       from: "Taste Buds Delight Orders <noreply@tastebudsdelight.com>",
       to: sellerEmail,
-      subject: `New Order: ${orderNumber} — £${body.total.toFixed(2)}`,
-      html: buildSellerEmail(orderNumber, customerName, customerEmail, body.total),
+      subject: `New Order: ${orderNumber} — £${total.toFixed(2)}`,
+      html: buildSellerEmail(orderNumber, customerName, customerEmail, total),
     });
   }
 
