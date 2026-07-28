@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { products as staticProducts } from "@/data/products";
 import { CartItem, ShippingInfo } from "@/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -105,11 +106,55 @@ export async function POST(request: NextRequest) {
   const body = await request.json() as {
     items: CartItem[];
     shipping_info: ShippingInfo;
-    subtotal: number;
-    tax: number;
-    shipping_cost: number;
-    total: number;
   };
+
+  if (!Array.isArray(body.items) || body.items.length === 0) {
+    return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+  }
+
+  for (const item of body.items) {
+    if (!item.productId || !Number.isInteger(item.quantity) || item.quantity <= 0) {
+      return NextResponse.json({ error: "Invalid cart item" }, { status: 400 });
+    }
+  }
+
+  // Recompute pricing server-side from the authoritative products table —
+  // never trust totals submitted by the client.
+  const { data: dbProducts, error: productsError } = await supabaseAdmin
+    .from("products")
+    .select("id, slug, price");
+
+  if (productsError) {
+    return NextResponse.json({ error: productsError.message }, { status: 500 });
+  }
+
+  const priceById = new Map((dbProducts ?? []).map((p) => [p.id as string, p.price as number]));
+  const priceBySlug = new Map((dbProducts ?? []).map((p) => [p.slug as string, p.price as number]));
+  const staticSlugById = new Map(staticProducts.map((p) => [p.id, p.slug]));
+
+  // Cart items added from the homepage/static catalog carry the static
+  // data/products.ts id (e.g. "1"), not the DB's generated uuid — resolve
+  // those to their DB record via the shared `slug` before pricing.
+  function resolvePrice(productId: string): number | undefined {
+    if (priceById.has(productId)) return priceById.get(productId);
+    const slug = staticSlugById.get(productId);
+    if (slug && priceBySlug.has(slug)) return priceBySlug.get(slug);
+    return undefined;
+  }
+
+  for (const item of body.items) {
+    if (resolvePrice(item.productId) === undefined) {
+      return NextResponse.json({ error: `Unknown product: ${item.productId}` }, { status: 400 });
+    }
+  }
+
+  const subtotal = body.items.reduce(
+    (acc, item) => acc + resolvePrice(item.productId)! * item.quantity,
+    0
+  );
+  const tax = subtotal * 0.08;
+  const shippingCost = subtotal > 50 ? 0 : 6;
+  const total = subtotal + tax + shippingCost;
 
   const orderNumber = generateOrderNumber();
   const customerName = body.shipping_info.fullName;
@@ -124,10 +169,10 @@ export async function POST(request: NextRequest) {
       customer_email: customerEmail,
       items: body.items,
       shipping_info: body.shipping_info,
-      subtotal: body.subtotal,
-      tax: body.tax,
-      shipping_cost: body.shipping_cost,
-      total: body.total,
+      subtotal,
+      tax,
+      shipping_cost: shippingCost,
+      total,
     }])
     .select()
     .single();
@@ -146,10 +191,10 @@ export async function POST(request: NextRequest) {
       customerName,
       body.items,
       body.shipping_info,
-      body.subtotal,
-      body.tax,
-      body.shipping_cost,
-      body.total
+      subtotal,
+      tax,
+      shippingCost,
+      total
     ),
   });
 
@@ -159,8 +204,8 @@ export async function POST(request: NextRequest) {
     await resend.emails.send({
       from: "Taste Buds Delight Orders <noreply@tastebudsdelight.com>",
       to: sellerEmail,
-      subject: `New Order: ${orderNumber} — £${body.total.toFixed(2)}`,
-      html: buildSellerEmail(orderNumber, customerName, customerEmail, body.total),
+      subject: `New Order: ${orderNumber} — £${total.toFixed(2)}`,
+      html: buildSellerEmail(orderNumber, customerName, customerEmail, total),
     });
   }
 
