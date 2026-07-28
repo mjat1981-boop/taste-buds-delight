@@ -11,7 +11,7 @@ const ALLOWED_TYPES: Record<string, string> = {
 const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5MB
 
 export async function POST(request: NextRequest) {
-  if (!isAuthorizedAdmin(request)) {
+  if (!(await isAuthorizedAdmin(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
