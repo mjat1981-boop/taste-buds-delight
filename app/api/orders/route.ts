@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { products as staticProducts } from "@/data/products";
 import { CartItem, ShippingInfo } from "@/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -119,25 +120,36 @@ export async function POST(request: NextRequest) {
 
   // Recompute pricing server-side from the authoritative products table —
   // never trust totals submitted by the client.
-  const productIds = body.items.map((item) => item.productId);
   const { data: dbProducts, error: productsError } = await supabaseAdmin
     .from("products")
-    .select("id, price")
-    .in("id", productIds);
+    .select("id, slug, price");
 
   if (productsError) {
     return NextResponse.json({ error: productsError.message }, { status: 500 });
   }
 
   const priceById = new Map((dbProducts ?? []).map((p) => [p.id as string, p.price as number]));
+  const priceBySlug = new Map((dbProducts ?? []).map((p) => [p.slug as string, p.price as number]));
+  const staticSlugById = new Map(staticProducts.map((p) => [p.id, p.slug]));
+
+  // Cart items added from the homepage/static catalog carry the static
+  // data/products.ts id (e.g. "1"), not the DB's generated uuid — resolve
+  // those to their DB record via the shared `slug` before pricing.
+  function resolvePrice(productId: string): number | undefined {
+    if (priceById.has(productId)) return priceById.get(productId);
+    const slug = staticSlugById.get(productId);
+    if (slug && priceBySlug.has(slug)) return priceBySlug.get(slug);
+    return undefined;
+  }
+
   for (const item of body.items) {
-    if (!priceById.has(item.productId)) {
+    if (resolvePrice(item.productId) === undefined) {
       return NextResponse.json({ error: `Unknown product: ${item.productId}` }, { status: 400 });
     }
   }
 
   const subtotal = body.items.reduce(
-    (acc, item) => acc + priceById.get(item.productId)! * item.quantity,
+    (acc, item) => acc + resolvePrice(item.productId)! * item.quantity,
     0
   );
   const tax = subtotal * 0.08;
